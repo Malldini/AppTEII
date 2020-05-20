@@ -1,0 +1,61 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/agenda" text="Voltar"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-fab-button (click)="showAdd()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-buttons>
+    <ion-title>
+      Netuno - Clientes
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-tabs>
+    <ion-tab-bar slot="bottom">
+
+      <ion-tab-button [routerLink]="['/cliente']" routerdirection="foward" tab="btnClientes">
+        <ion-icon name="people-outline"></ion-icon>
+        <ion-label>Clientes</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button [routerLink]="['/pacote']" routerdirection="foward" tab="btnPacotes">
+        <ion-icon name="logo-dropbox"></ion-icon>
+        <ion-label>Pacotes</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button [routerLink]="['/automovel']" routerdirection="foward" tab="btnVeiculo">
+        <ion-icon name="car-outline"></ion-icon>
+        <ion-label>Automovéis</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button [routerLink]="['/funcionario']" routerdirection="foward" tab="btnFuncionario">
+        <ion-icon name="person-outline"></ion-icon>
+        <ion-label>Funcionarios</ion-label>
+      </ion-tab-button>
+
+    </ion-tab-bar>
+  </ion-tabs>
+
+  <ion-list>
+    <ion-item *ngIf="clientes.length < 1">
+      <ion-label>Não há clientes</ion-label>
+    </ion-item>
+    <ion-item-sliding *ngFor="let cliente of clientes">
+      <ion-item>
+        <ion-label>{{cliente.nome}}</ion-label>
+        <ion-icon slot="start" name="people-outline"></ion-icon>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option (click)="delete(cliente)">Deletar</ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
+  </ion-list>
+
+</ion-content>

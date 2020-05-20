@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      Netuno
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    <ion-item *ngIf="clientes.length < 1">
+      <ion-label>Não há clientes</ion-label>
+    </ion-item>
+    <ion-item-sliding *ngFor="let cliente of clientes">
+      <ion-item (click)="openActions(cliente)"> 
+        <ion-label>{{cliente.nome}}</ion-label>
+        <ion-icon slot="start" name="people-outline" *ngIf="!cliente.done"></ion-icon>
+        <ion-icon slot="start" name="checkmark-circle" color='success' *ngIf="cliente.done"></ion-icon>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option (click)="delete(cliente)">Deletar</ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="showAdd()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>
