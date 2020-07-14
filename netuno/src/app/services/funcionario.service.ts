@@ -1,46 +1,44 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { API_LAVACAO } from './api-Lavacao';
+import { Funcionario } from '../page/models/funcionario.Interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FuncionarioService {
 
-  constructor(private http: HttpClient) { }
+  private URI = API_LAVACAO + 'funcionario';
 
-  add(funcionario: any) {
-    let url = 'http://localhost:17901/api/funcionario';
+  constructor(
+    private httpClient: HttpClient)
+     { }
 
-    var header = {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
+  getFuncionarios() {
+    return this.httpClient.get<Funcionario[]>(this.URI);
+  }
+
+  adicionar(funcionario: Funcionario) {
+    return this.httpClient.post<Funcionario>(this.URI, funcionario);
+  }
+
+  atualizar(funcionario: Funcionario) {
+    return this.httpClient.put<Funcionario>(`${this.URI}/${funcionario.id}`, funcionario);
+  }
+
+  getFuncionario(id: number) {
+    return this.httpClient.get<Funcionario>(`${this.URI}/${id}`);
+  }
+
+  excluir(funcionario: Funcionario) {
+    return this.httpClient.delete(`${this.URI}/${funcionario.id}`);
+  }
+
+  salvar(funcionario: Funcionario) {
+    if (funcionario && funcionario.id) {
+      return this.atualizar(funcionario);
+    } else {
+      return this.adicionar(funcionario);
     }
-
-    let param = { nome : funcionario, tel : funcionario, cpf: funcionario };
-
-    return this.http.post(url, param, header).toPromise();
-  }
-
-  update(funcionario: any) {
-    let url = 'http://localhost:17901/api/funcionario';
-
-    var header = {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-    }
-
-    return this.http.put(url, funcionario, header).toPromise();
-  }
-
-  list(){
-    let url = 'http://localhost:17901/api/funcionario';
-
-    return this.http.get(url).toPromise();
-  }
-
-  delete(id : any){
-    let url = 'http://localhost:17901/api/funcionario/' + id;
-
-    return this.http.delete(url).toPromise();  
   }
 }

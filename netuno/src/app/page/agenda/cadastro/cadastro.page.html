@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Cadastro de Agendamento</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #agendaForm="ngForm" novalidate>
+    <ion-item>
+      <ion-label>Funcionario:</ion-label>
+      <ion-select [(ngModel)]="funcionarios" multiple="true" placeholder="Selecione o funcionario"
+          name="funcionario" >
+        <ion-select-option *ngFor="let funcionario of funcionarios" [value]="funcionario">
+          {{funcionario.nome}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Cliente:</ion-label>
+      <ion-select [(ngModel)]="clientes" multiple="true" placeholder="Selecione o cliente"
+        name="cliente" >
+        <ion-select-option *ngFor="let cliente of clientes" [value]="cliente">
+          {{cliente.nome}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Automoveis:</ion-label>
+      <ion-select [(ngModel)]="automoveis" multiple="true" placeholder="Selecione o automovel"
+        name="automovel" >
+        <ion-select-option *ngFor="let automovel of automoveis" [value]="automovel">
+          {{automovel.nome}},{{automovel.placa}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Data: </ion-label>
+      <ion-input type="date" [(ngModel)]="agenda.lavacao" name="lavacao"></ion-input>
+    </ion-item>    
+
+    <ion-fab vertical="bottom" horizontal="end">
+      <ion-fab-button (click)="salvar()" [disabled]="agendaForm.invalid">
+        <ion-icon name="checkmark-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+  </form>
+</ion-content>

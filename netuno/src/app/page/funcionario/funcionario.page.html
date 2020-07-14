@@ -3,13 +3,8 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/agenda" text="Voltar"></ion-back-button>
     </ion-buttons>
-
     <ion-buttons slot="end">
-      <ion-fab-button (click)="showAdd()">
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button>
     </ion-buttons>
-
     <ion-title>
       Netuno - Funcionarios
     </ion-title>
@@ -45,16 +40,18 @@
   </ion-tabs>
 
   <ion-list>
-    <ion-item-sliding *ngFor="let funcionario of funcionario">
-      <ion-item>
+    <ion-item *ngFor="let funcionario of funcionarios">
         <ion-label>{{funcionario.nome}}</ion-label>
         <ion-icon slot="start" name="people-outline"></ion-icon>
-      </ion-item>
-      <ion-item-options side="end">
-        <ion-item-option (click)="delete(funcionario)">Deletar</ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
-
+        <ion-icon color="primary" name="create" slot="end" [routerLink]="['/funcionario/cadastro', funcionario.id]"></ion-icon>
+        <ion-icon color="primary" name="trash" slot="end" (click)="confirmarExclusao(funcionario)"></ion-icon>
+    </ion-item>
   </ion-list>
+  
+  <ion-fab vertical="top" horizontal="end">
+    <ion-fab-button [routerLink]="['/funcionario/cadastro']">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
 </ion-content>

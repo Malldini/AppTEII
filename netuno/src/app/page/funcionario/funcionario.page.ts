@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { FuncionarioService } from 'src/app/services/funcionario.service';
+import { Funcionario } from '../models/funcionario.Interface';
 
 @Component({
   selector: 'app-funcionario',
@@ -9,144 +10,57 @@ import { FuncionarioService } from 'src/app/services/funcionario.service';
 })
 export class FuncionarioPage {
 
-  funcionarios: any[] = [];
+  funcionarios: any[];
 
   constructor(private alertCtlr: AlertController,
     private toastCtlr: ToastController,
-    private funcionarioService: FuncionarioService) {
-
-      this.loadFuncionarios();
+    private funcionarioService: FuncionarioService,
+    private loadingController: LoadingController) {
      }
 
-     loadFuncionarios() {
-      this.funcionarioService.list()
-        .then(async (response: any[]) => {
-          this.funcionarios = response;
-        })
-        .catch(async (response) => {
-          console.log(response);
-  
-          const toast = await this.toastCtlr.create({
-            message: 'Operação fracassou!',
-            duration: 2000,
-            position: 'top'
-          });
-          toast.present();
-  
-        });
+     ngOnInit() {
     }
   
-    async showAdd() {
-      const alert = await this.alertCtlr.create({
-        header: 'Cadastre o Funcionario',
-        inputs: [
-          {
-            name: 'nome',
-            type: 'text',
-            placeholder: 'Nome'
-          },
-          {
-            name: 'tel',
-            type: 'text',
-            placeholder: 'Telefone',
-          },
-          {
-            name: 'cpf',
-            type: 'text',
-            placeholder: 'CPF',
-          }
-        ],
-        buttons: [
-          {
-            text: 'Cancelar',
-            role: 'cancel',
-            cssClass: 'secondary',
-            handler: () => {
-              console.log('Confirm Cancel');
-            }
-          }, {
-            text: 'Cadastrar',
-            handler: (form) => {
-              console.log(form.nome);
-              console.log(form.tel);
-              console.log(form.cpf);
+    ionViewWillEnter() {
+      this.listar();
+    }
   
-              this.add(form.nome, form.tel, form.cpf);
-            }
-          }
-        ]
+    async listar() {
+      const loading = await this.loadingController.create({
+        message: 'Carregando'
       });
-  
-      await alert.present();
-    }
-
-    async add(nome: string, tel: string, cpf: string) {
-      if (nome.trim().length < 1 || tel.trim().length < 11 || cpf.trim().length < 11) {
-        const toast = await this.toastCtlr.create({
-          message: 'Revise os campos!',
-          duration: 2000,
-          position: 'top'
-        });
-        toast.present();
-        return;
-      }
-      let funcionario = { name: nome, phone: tel, doc: cpf, done: false };
-  
-      this.funcionarios.push(funcionario);
-  
-      this.funcionarioService.add(funcionario)
-        .then(async (response) => {
-          console.log(response);
-  
-          const toast = await this.toastCtlr.create({
-            message: 'Operação realizada com sucesso!',
-            duration: 2000,
-            position: 'top'
-          });
-          toast.present();
-  
-          this.loadFuncionarios();
-  
-        })
-        .catch(async (response) => {
-          console.log(response);
-  
-          const toast = await this.toastCtlr.create({
-            message: 'Operação fracassou!',
-            duration: 2000,
-            position: 'top'
-          });
-          toast.present();
-  
-        });
+      loading.present();
+      // this.autores = this.autorService.getAutores();
+      this.funcionarioService.getFuncionarios().subscribe((data) => {
+        this.funcionarios = data;
+        loading.dismiss();
+      });
     }
   
-    async delete(funcionario: any) {
+    async confirmarExclusao(funcionario: Funcionario) {
+      let alerta = await this.alertCtlr.create({
+        header: 'Confirmação de exclusão',
+        message: `Deseja excluir o funcionario ${funcionario.nome}?`,
+        buttons: [{
+          text: 'SIM',
+          handler: () => {
+            this.excluir(funcionario);
+          }
+        }, {
+          text: 'NÃO'
+        }]
+      });
+      alerta.present();
+    }
   
-      this.funcionarioService.delete(funcionario.id)
-        .then(async (response) => {
-          console.log(response);
-  
-          const toast = await this.toastCtlr.create({
-            message: 'Operação realizada com sucesso!',
-            duration: 2000,
-            position: 'top'
-          });
-          toast.present();
-          this.loadFuncionarios();
-  
-        })
-        .catch(async (response) => {
-          console.log(response);
-  
-          const toast = await this.toastCtlr.create({
-            message: 'Operação fracassou!',
-            duration: 2000,
-            position: 'top'
-          });
-          toast.present();
-  
-        });
+    private async excluir(funcionario: Funcionario) {
+      const busyLoader = await this.loadingController.create({ message: 'Excluíndo...' });
+      busyLoader.present();
+      
+      this.funcionarioService.excluir(funcionario).subscribe(() => {
+        this.listar()
+        busyLoader.dismiss();
+      });
     }
 
 }

@@ -1,20 +1,12 @@
-<app-header></app-header>
-
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
-
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/agenda" text="Voltar"></ion-back-button>
     </ion-buttons>
-
     <ion-buttons slot="end">
-      <ion-fab-button (click)="showAdd()">
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button>
     </ion-buttons>
-
     <ion-title>
-      Netuno - AUTOMÓVEL
+      Netuno - Automovéis
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -48,20 +40,18 @@
   </ion-tabs>
 
   <ion-list>
-    <ion-item *ngIf="automoveis.length < 1">
-      <ion-label>Não há automóveis</ion-label>
+    <ion-item *ngFor="let automovel of automoveis">
+        <ion-label>{{automovel.nome}} / Placa: {{automovel.placa}}</ion-label>
+        <ion-icon slot="start" name="car-outline"></ion-icon>
+        <ion-icon color="primary" name="create" slot="end" [routerLink]="['/automovel/cadastro', automovel.id]"></ion-icon>
+        <ion-icon color="primary" name="trash" slot="end" (click)="confirmarExclusao(automovel)"></ion-icon>
     </ion-item>
-    <ion-item-sliding *ngFor="let automovel of automoveis">
-      <ion-item>
-        <ion-label>{{automovel.nome}}</ion-label>
-        <ion-icon slot='start' name="car-outline"></ion-icon>
-      </ion-item>
-      <ion-item-options side="end">
-        <ion-item-option (click)="delete(automovel)">Deletar</ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
-
   </ion-list>
-
+  
+  <ion-fab vertical="top" horizontal="end">
+    <ion-fab-button [routerLink]="['/automovel/cadastro']">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
 </ion-content>

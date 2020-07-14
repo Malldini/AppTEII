@@ -7,8 +7,16 @@ const routes: Routes = [
   {
     path: '',
     component: FuncionarioPage
+  },
+  {
+    path: 'cadastro',
+    loadChildren: () => import('./cadastro/cadastro.module').then( m => m.CadastroPageModule)
+  },
+  {
+    path: 'cadastro/:id',
+    loadChildren: () => import('./cadastro/cadastro.module').then( m => m.CadastroPageModule)
   }
-];
+  ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

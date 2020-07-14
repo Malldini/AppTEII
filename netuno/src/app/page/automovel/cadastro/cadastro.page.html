@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Cadastro de Automovel</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #automovelForm="ngForm" novalidate>
+    <ion-item>
+      <ion-label position="floating">Nome *:</ion-label>
+      <ion-input type="text" name="nome" [(ngModel)]="automovel.nome" required minlength="1"  #campoNome="ngModel">
+      </ion-input>
+      <ion-text color="danger" *ngIf="campoNome.invalid && (campoNome.dirty || campoNome.touched)">
+        <small>
+          <span *ngIf="campoNome.errors.required">
+            O nome é obrigatório
+          </span>
+        </small>
+      </ion-text>     
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Marca *:</ion-label>
+      <ion-input type="text" name="marca" [(ngModel)]="automovel.marca" required minlength="1" #campoMarca="ngModel">
+      </ion-input>
+      <ion-text color="danger" *ngIf="campoMarca.invalid && (campoMarca.dirty || campoMarca.touched)">
+        <small>
+          <span *ngIf="campoMarca.errors.required">
+            A marca é obrigatório
+          </span>
+        </small>
+      </ion-text>     
+    </ion-item>
+
+    <ion-item>
+        <ion-label position="floating">Portas *:</ion-label>
+        <ion-input type="number" name="porta" [(ngModel)]="automovel.porta" name="porta" required pattern="[0-9]+" #campoPorta="ngModel"></ion-input>
+      <ion-text color="danger" *ngIf="campoPorta.invalid && (campoPorta.dirty || campoPorta.touched)">
+        <small>
+          <span *ngIf="campoPorta.errors.required">
+            A quantidade de portas é obrigatório
+          </span>
+          <span *ngIf="campoPorta.errors.pattern">
+            O campo porta deve conter apenas numeros
+          </span>
+        </small>
+      </ion-text>  
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Placa *:</ion-label>
+      <ion-input type="text" name="placa" [(ngModel)]="automovel.placa" required pattern=[0-9a-zA-Z]{7} #campoPlaca="ngModel">
+      </ion-input>
+      <ion-text color="danger" *ngIf="campoPlaca.invalid && (campoPlaca.dirty || campoPlaca.touched)">
+        <small>
+          <span *ngIf="campoPlaca.errors.required">
+            A placa precisa ser preenchida com 7 digitos/caracteres
+          </span>
+        </small>
+      </ion-text>     
+    </ion-item>
+    
+
+    <ion-fab vertical="bottom" horizontal="end">
+      <ion-fab-button (click)="salvar()" [disabled]="automovelForm.invalid">
+        <ion-icon name="checkmark-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+  </form>
+</ion-content>

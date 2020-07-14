@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Cadastro de Clientes</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #clienteForm="ngForm" novalidate>
+    <ion-item>
+      <ion-label position="floating">Nome *:</ion-label>
+      <ion-input type="text" name="nome" [(ngModel)]="cliente.nome" required minlength="1" pattern="[a-zA-Z ]+" #campoNome="ngModel">
+      </ion-input>
+      <ion-text color="danger" *ngIf="campoNome.invalid && (campoNome.dirty || campoNome.touched)">
+        <small>
+          <span *ngIf="campoNome.errors.required">
+            O nome é obrigatório
+          </span>
+          <span *ngIf="campoNome.errors.pattern">
+            O campo nome deve conter apenas letras
+          </span>
+        </small>
+      </ion-text>     
+    </ion-item>
+
+    <ion-item>
+        <ion-label position="floating">Telefone *:</ion-label>
+        <ion-input type="text" name="tel" [(ngModel)]="cliente.tel"  required pattern="[0-9]{11}" #campoTel="ngModel">
+      </ion-input>
+      <ion-text color="danger" *ngIf="campoTel.invalid && (campoTel.dirty || campoTel.touched)">
+        <small>
+          <span *ngIf="campoTel.errors.required">
+            O telefone é obrigatório
+          </span>
+          <span *ngIf="campoTel.errors.pattern">
+            O campo telefone deve conter 11 digitos numéricos
+          </span>
+        </small>
+      </ion-text>    
+    </ion-item>
+
+    <ion-item>
+        <ion-label position="floating">CPF *:</ion-label>
+        <ion-input type="text" name="cpf" [(ngModel)]="cliente.cpf" required pattern="[0-9]{11}" #campoCpf="ngModel">
+      </ion-input>
+      <ion-text color="danger" *ngIf="campoCpf.invalid && (campoCpf.dirty || campoCpf.touched)">
+        <small>
+          <span *ngIf="campoCpf.errors.required">
+            O CPF é obrigatório
+          </span>
+          <span *ngIf="campoCpf.errors.pattern">
+            O campo CPF deve conter 11 digitos numéricos
+          </span>
+        </small>
+      </ion-text>  
+    </ion-item>
+
+    <!--<ion-item>
+      <ion-label>Automoveis:</ion-label>
+      <ion-select [(ngModel)]="cliente.automoveis" multiple="true" placeholder="Selecione o automovel"
+        [compareWith]="compareWith" name="automovel" >
+        <ion-select-option *ngFor="let automovel of automoveis" [value]="automovel">
+          {{automovel.nome}},{{automovel.placa}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>-->
+
+    <ion-fab vertical="bottom" horizontal="end">
+      <ion-fab-button (click)="salvar()" [disabled]="clienteForm.invalid">
+        <ion-icon name="checkmark-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+  </form>
+</ion-content>

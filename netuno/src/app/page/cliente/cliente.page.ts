@@ -1,151 +1,64 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, ToastController, ActionSheetController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController, ActionSheetController } from '@ionic/angular';
 import { ClienteService } from 'src/app/services/cliente.service';
+import { Cliente } from '../models/cliente.Interface';
 
 @Component({
   selector: 'app-cliente',
   templateUrl: './cliente.page.html',
   styleUrls: ['./cliente.page.scss'],
 })
-export class ClientePage {
+export class ClientePage implements OnInit{
 
-  clientes: any[] = [];
+  clientes: Cliente[];
 
-  constructor(private alertCtlr: AlertController,
-    private toastCtlr: ToastController,
-    private clienteService: ClienteService) {
-
-    this.loadClientes();
+  constructor(
+    private alertCtlr: AlertController,
+    private clienteService: ClienteService,
+    private loadingController: LoadingController ) {
   }
 
-  loadClientes() {
-    this.clienteService.list()
-      .then(async (response: any[]) => {
-        this.clientes = response;
-      })
-      .catch(async (response) => {
-        console.log(response);
-
-        const toast = await this.toastCtlr.create({
-          message: 'Operação fracassou!',
-          duration: 2000,
-          position: 'top'
-        });
-        toast.present();
-
-      });
+  ngOnInit() {
   }
 
-  async showAdd() {
-    const alert = await this.alertCtlr.create({
-      header: 'Cadastre o Cliente',
-      inputs: [
-        {
-          name: 'nome',
-          type: 'text',
-          placeholder: 'Nome'
-        },
-        {
-          name: 'tel',
-          type: 'text',
-          placeholder: 'Telefone',
-        },
-        {
-          name: 'cpf',
-          type: 'text',
-          placeholder: 'CPF',
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: () => {
-            console.log('Confirm Cancel');
-          }
-        }, {
-          text: 'Cadastrar',
-          handler: (form) => {
-            console.log(form.nome);
-            console.log(form.tel);
-            console.log(form.cpf);
+  ionViewWillEnter() {
+    this.listar();
+  }
 
-            this.add(form.nome, form.tel, form.cpf);
-          }
-        }
-      ]
+  async listar() {
+    const loading = await this.loadingController.create({
+      message: 'Carregando'
     });
-
-    await alert.present();
+    loading.present();
+    this.clienteService.getClientes().subscribe((data) => {
+      this.clientes = data;
+      loading.dismiss();
+    });
   }
 
-  async add(nome: string, tel: string, cpf: string) {
-    if (nome.trim().length < 1 || tel.trim().length < 11 || cpf.trim().length < 11) {
-      const toast = await this.toastCtlr.create({
-        message: 'Revise os campos!',
-        duration: 2000,
-        position: 'top'
-      });
-      toast.present();
-      return;
-    }
-    let cliente = { name: nome, phone: tel, doc: cpf, done: false };
-
-    this.clientes.push(cliente);
-
-    this.clienteService.add(cliente)
-      .then(async (response) => {
-        console.log(response);
-
-        const toast = await this.toastCtlr.create({
-          message: 'Operação realizada com sucesso!',
-          duration: 2000,
-          position: 'top'
-        });
-        toast.present();
-
-        this.loadClientes();
-
-      })
-      .catch(async (response) => {
-        console.log(response);
-
-        const toast = await this.toastCtlr.create({
-          message: 'Operação fracassou!',
-          duration: 2000,
-          position: 'top'
-        });
-        toast.present();
-
-      });
+  async confirmarExclusao(cliente: Cliente) {
+    let alerta = await this.alertCtlr.create({
+      header: 'Confirmação de exclusão',
+      message: `Deseja excluir o cliente ${cliente.nome}?`,
+      buttons: [{
+        text: 'SIM',
+        handler: () => {
+          this.excluir(cliente);
+        }
+      }, {
+        text: 'NÃO'
+      }]
+    });
+    alerta.present();
   }
 
-  async delete(cliente: any) {
-
-    this.clienteService.delete(cliente.id)
-      .then(async (response) => {
-        console.log(response);
-
-        const toast = await this.toastCtlr.create({
-          message: 'Operação realizada com sucesso!',
-          duration: 2000,
-          position: 'top'
-        });
-        toast.present();
-        this.loadClientes();
-
-      })
-      .catch(async (response) => {
-        console.log(response);
-
-        const toast = await this.toastCtlr.create({
-          message: 'Operação fracassou!',
-          duration: 2000,
-          position: 'top'
-        });
-        toast.present();
-
-      });
+  private async excluir(cliente: Cliente) {
+    const busyLoader = await this.loadingController.create({ message: 'Excluíndo...' });
+    busyLoader.present();
+    
+    this.clienteService.excluir(cliente).subscribe(() => {
+      this.listar()
+      busyLoader.dismiss();
+    });
   }
 }

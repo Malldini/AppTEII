@@ -1,46 +1,44 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { API_LAVACAO } from './api-Lavacao';
+import { Cliente } from '../page/models/cliente.Interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClienteService {
 
-  constructor(private http: HttpClient) { }
+  private URI = API_LAVACAO + 'cliente';
 
-  add(cliente: any) {
-    let url = 'http://localhost:17901/api/cliente';
+  constructor(
+    private httpClient: HttpClient)
+     { }
 
-    var header = {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
+  getClientes() {
+    return this.httpClient.get<Cliente[]>(this.URI);
+  }
+
+  adicionar(cliente: Cliente) {
+    return this.httpClient.post<Cliente>(this.URI, cliente);
+  }
+
+  atualizar(cliente: Cliente) {
+    return this.httpClient.put<Cliente>(`${this.URI}/${cliente.id}`, cliente);
+  }
+
+  getCliente(id: number) {
+    return this.httpClient.get<Cliente>(`${this.URI}/${id}`);
+  }
+
+  excluir(cliente: Cliente) {
+    return this.httpClient.delete(`${this.URI}/${cliente.id}`);
+  }
+
+  salvar(cliente: Cliente) {
+    if (cliente.id) {
+      return this.atualizar(cliente);
+    } else {
+      return this.adicionar(cliente);
     }
-
-    let param = { nome : cliente, tel : cliente, cpf: cliente };
-
-    return this.http.post(url, param, header).toPromise();
-  }
-
-  update(cliente: any) {
-    let url = 'http://localhost:17901/api/cliente';
-
-    var header = {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-    }
-
-    return this.http.put(url, cliente, header).toPromise();
-  }
-
-  list(){
-    let url = 'http://localhost:17901/api/cliente';
-
-    return this.http.get(url).toPromise();
-  }
-
-  delete(id : any){
-    let url = 'http://localhost:17901/api/cliente/' + id;
-
-    return this.http.delete(url).toPromise();  
   }
 }

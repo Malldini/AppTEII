@@ -1,46 +1,45 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { API_LAVACAO } from './api-Lavacao';
+import { Automovel } from '../page/models/automovel.Interface';
+import { Agenda } from '../page/models/agenda.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AgendaService {
 
-  constructor(private http: HttpClient) { }
+  private URI = API_LAVACAO + 'agenda';
 
-  add(agenda: any) {
-    let url = 'http://localhost:17901/api/agenda';
+  constructor(
+    private httpClient: HttpClient)
+     { }
 
-    var header = {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
+  getAgendas() {
+    return this.httpClient.get<Agenda[]>(this.URI);
+  }
+
+  adicionar(agenda: Agenda) {
+    return this.httpClient.post<Agenda>(this.URI, agenda);
+  }
+
+  atualizar(agenda: Agenda) {
+    return this.httpClient.put<Agenda>(`${this.URI}/${agenda.id}`, agenda);
+  }
+
+  getAgenda(id: number) {
+    return this.httpClient.get<Agenda>(`${this.URI}/${id}`);
+  }
+
+  excluir(agenda: Agenda) {
+    return this.httpClient.delete(`${this.URI}/${agenda.id}`);
+  }
+
+  salvar(agenda: Agenda) {
+    if (agenda && agenda.id) {
+      return this.atualizar(agenda);
+    } else {
+      return this.adicionar(agenda);
     }
-
-    let param = { nomeF : agenda, veiculo : agenda, nomeC: agenda, pacote: agenda, data: agenda };
-
-    return this.http.post(url, param, header).toPromise();
-  }
-
-  update(agenda: any) {
-    let url = 'http://localhost:17901/api/agenda';
-
-    var header = {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-    }
-
-    return this.http.put(url, agenda, header).toPromise();
-  }
-
-  list(){
-    let url = 'http://localhost:17901/api/agenda';
-
-    return this.http.get(url).toPromise();
-  }
-
-  delete(id : any){
-    let url = 'http://localhost:17901/api/agenda/' + id;
-
-    return this.http.delete(url).toPromise();  
   }
 }

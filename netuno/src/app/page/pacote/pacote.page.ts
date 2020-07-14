@@ -1,151 +1,64 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, ToastController, ActionSheetController } from '@ionic/angular';
+import { AlertController, ToastController, ActionSheetController, LoadingController } from '@ionic/angular';
 import { PacoteService } from 'src/app/services/pacote.service';
+import { Pacote } from '../models/pacote.Interface';
 
 @Component({
   selector: 'app-pacote',
   templateUrl: './pacote.page.html',
   styleUrls: ['./pacote.page.scss'],
 })
-export class PacotePage{
+export class PacotePage {
 
-  pacotes: any[] = [];
+  pacotes: Pacote[];
 
   constructor(private alertCtlr: AlertController,
-     private toastCtlr: ToastController,
-      private actionSheetCtlr: ActionSheetController,
-      private pacoteService: PacoteService) {
-
-    this.loadPacotes();
+    private pacoteService: PacoteService,
+    private loadingController: LoadingController) {
   }
 
-  loadPacotes() {
-    this.pacoteService.list()
-      .then(async (response: any[]) => {
-        this.pacotes = response;
-      })
-      .catch(async (response) => {
-        console.log(response);
-
-        const toast = await this.toastCtlr.create({
-          message: 'Operação fracassou!',
-          duration: 2000,
-          position: 'top'
-        });
-        toast.present();
-
-      });
+  ngOnInit() {
   }
 
-  async showAdd() {
-    const alert = await this.alertCtlr.create({
-      header: 'Cadastre o Pacote',
-      inputs: [
-        {
-          name: 'nome',
-          type: 'text',
-          placeholder: 'Nome'
-        },
-        {
-          name: 'preco',
-          type: 'number',
-          placeholder: 'Preco',
+  ionViewWillEnter() {
+    this.listar();
+  }
+
+  async listar() {
+    const loading = await this.loadingController.create({
+      message: 'Carregando'
+    });
+    loading.present();
+    // this.autores = this.autorService.getAutores();
+    this.pacoteService.getPacotes().subscribe((data) => {
+      this.pacotes = data;
+      loading.dismiss();
+    });
+  }
+
+  async confirmarExclusao(pacote: Pacote) {
+    let alerta = await this.alertCtlr.create({
+      header: 'Confirmação de exclusão',
+      message: `Deseja excluir o pacote ${pacote.nome}?`,
+      buttons: [{
+        text: 'SIM',
+        handler: () => {
+          this.excluir(pacote);
         }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: () => {
-            console.log('Confirm Cancel');
-          }
-        }, {
-          text: 'Cadastrar',
-          handler: (form) => {
-            console.log(form.nome);
-            console.log(form.preco);
-
-            this.add(form.nome, form.preco);
-          }
-        }
-      ]
+      }, {
+        text: 'NÃO'
+      }]
     });
-
-  await alert.present();
-}
-
-async add(nome: string, preco: number) {
-  if (nome.trim().length < 1 || preco < 0.1) {
-    const toast = await this.toastCtlr.create({
-      message: 'Revise os campos!',
-      duration: 2000,
-      position: 'top'
-    });
-    toast.present();
-    return;
+    alerta.present();
   }
 
-  let pacote = { name: nome, price: preco, done: false };
-
-  this.pacotes.push(pacote);
-
-  this.pacoteService.add(pacote)
-  .then(async (response) => {
-    console.log(response);
-
-    const toast = await this.toastCtlr.create({
-      message: 'Operação realizada com sucesso!',
-      duration: 2000,
-      position: 'top'
+  private async excluir(pacote: Pacote) {
+    const busyLoader = await this.loadingController.create({ message: 'Excluíndo...' });
+    busyLoader.present();
+    
+    this.pacoteService.excluir(pacote).subscribe(() => {
+      this.listar()
+      busyLoader.dismiss();
     });
-    toast.present();
-
-    this.loadPacotes();
-
-  })
-  .catch(async (response) => {
-    console.log(response);
-
-    const toast = await this.toastCtlr.create({
-      message: 'Operação fracassou!',
-      duration: 2000,
-      position: 'top'
-    });
-    toast.present();
-
-  });
-}
-
-updateLocalStorage() {
-  localStorage.setItem('pacoteDb', JSON.stringify(this.pacotes));
-}
-
-async delete(pacote: any) {
-
-  this.pacoteService.delete(pacote.id)
-    .then(async (response) => {
-      console.log(response);
-      
-      const toast = await this.toastCtlr.create({
-        message: 'Operação realizada com sucesso!',
-        duration: 2000,
-        position: 'top'
-      });
-      toast.present();
-      this.loadPacotes();
-
-    })
-    .catch(async (response) => {
-      console.log(response);
-
-      const toast = await this.toastCtlr.create({
-        message: 'Operação fracassou!',
-        duration: 2000,
-        position: 'top'
-      });
-      toast.present();
-
-    });
-}
+  }
 }

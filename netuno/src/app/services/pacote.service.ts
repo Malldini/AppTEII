@@ -1,46 +1,44 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { API_LAVACAO } from './api-Lavacao';
+import { Pacote } from '../page/models/pacote.Interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PacoteService {
 
-  constructor(private http: HttpClient) { }
+  private URI = API_LAVACAO + 'pacote';
 
-  add(pacote: any) {
-    let url = 'http://localhost:17901/api/pacote';
+  constructor(
+    private httpClient: HttpClient)
+     { }
 
-    var header = {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
+  getPacotes() {
+    return this.httpClient.get<Pacote[]>(this.URI);
+  }
+
+  adicionar(pacote: Pacote) {
+    return this.httpClient.post<Pacote>(this.URI, pacote);
+  }
+
+  atualizar(pacote: Pacote) {
+    return this.httpClient.put<Pacote>(`${this.URI}/${pacote.id}`, pacote);
+  }
+
+  getPacote(id: number) {
+    return this.httpClient.get<Pacote>(`${this.URI}/${id}`);
+  }
+
+  excluir(pacote: Pacote) {
+    return this.httpClient.delete(`${this.URI}/${pacote.id}`);
+  }
+
+  salvar(pacote: Pacote) {
+    if (pacote && pacote.id) {
+      return this.atualizar(pacote);
+    } else {
+      return this.adicionar(pacote);
     }
-
-    let param = { nome : pacote, preco : pacote };
-
-    return this.http.post(url, param, header).toPromise();
-  }
-
-  update(pacote: any) {
-    let url = 'http://localhost:17901/api/pacote';
-
-    var header = {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-    }
-
-    return this.http.put(url, pacote, header).toPromise();
-  }
-
-  list(){
-    let url = 'http://localhost:17901/api/pacote';
-
-    return this.http.get(url).toPromise();
-  }
-
-  delete(id : any){
-    let url = 'http://localhost:17901/api/pacote/' + id;
-
-    return this.http.delete(url).toPromise();  
   }
 }

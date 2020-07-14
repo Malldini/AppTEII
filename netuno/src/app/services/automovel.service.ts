@@ -1,46 +1,44 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { API_LAVACAO } from './api-Lavacao';
+import { Automovel } from '../page/models/automovel.Interface';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AutomovelService {
 
-    constructor(private http: HttpClient) { }
+  private URI = API_LAVACAO + 'automovel';
 
-    add(automovel: any) {
-        let url = 'http://localhost:17901/api/automovel';
+  constructor(
+    private httpClient: HttpClient)
+     { }
 
-        var header = {
-            headers: new HttpHeaders()
-                .set('Content-Type', 'application/json')
-        }
+  getAutomoveis() {
+    return this.httpClient.get<Automovel[]>(this.URI);
+  }
 
-        let param = { nome: automovel, marca: automovel, porta: automovel, placa: automovel };
+  adicionar(automovel: Automovel) {
+    return this.httpClient.post<Automovel>(this.URI, automovel);
+  }
 
-        return this.http.post(url, param, header).toPromise();
+  atualizar(automovel: Automovel) {
+    return this.httpClient.put<Automovel>(`${this.URI}/${automovel.id}`, automovel);
+  }
+
+  getAutomovel(id: number) {
+    return this.httpClient.get<Automovel>(`${this.URI}/${id}`);
+  }
+
+  excluir(automovel: Automovel) {
+    return this.httpClient.delete(`${this.URI}/${automovel.id}`);
+  }
+
+  salvar(automovel: Automovel) {
+    if (automovel && automovel.id) {
+      return this.atualizar(automovel);
+    } else {
+      return this.adicionar(automovel);
     }
-
-    update(automovel: any) {
-        let url = 'http://localhost:17901/api/automovel';
-
-        var header = {
-            headers: new HttpHeaders()
-                .set('Content-Type', 'application/json')
-        }
-
-        return this.http.put(url, automovel, header).toPromise();
-    }
-
-    list() {
-        let url = 'http://localhost:17901/api/automovel';
-
-        return this.http.get(url).toPromise();
-    }
-
-    delete(id: any) {
-        let url = 'http://localhost:17901/api/automovel/' + id;
-
-        return this.http.delete(url).toPromise();
-    }
+  }
 }

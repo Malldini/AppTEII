@@ -1,0 +1,1 @@
+export const API_LAVACAO = 'http://localhost:8080/netuno-api/resources/';
